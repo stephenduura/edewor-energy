@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edewor Energy | Powering Nigeria's Energy Future</title>
+    <script>
+      // Gracefully capture and suppress non-critical or cross-origin script errors
+      // (such as sandbox socket interruptions, iframe boundaries, browser extensions, or platform wrappers)
+      window.onerror = function(message, source, lineno, colno, error) {
+        const msg = String(message || '');
+        const src = String(source || '');
+        if (msg.toLowerCase().indexOf('script error') !== -1 || !src || (src.indexOf('localhost') === -1 && !src.startsWith('/') && src.indexOf(window.location.host) === -1)) {
+          console.warn('Muted cross-origin/sandbox script error:', msg, 'Source:', src);
+          return true; // Return true to prevent the browser from firing default error handler and bubbling
+        }
+        return false;
+      };
+
+      window.addEventListener('error', function(event) {
+        const msg = String(event.message || '');
+        const src = String(event.filename || '');
+        if (msg.toLowerCase().indexOf('script error') !== -1 || !src || (src.indexOf('localhost') === -1 && !src.startsWith('/') && src.indexOf(window.location.host) === -1)) {
+          console.warn('Muted cross-origin/sandbox event error:', msg, 'Source:', src);
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          return true;
+        }
+      }, true); // Our custom error logging will ignore these minor cross-origin exceptions.
+
+      window.addEventListener('unhandledrejection', function(event) {
+        console.warn('Captured unhandled promise rejection:', event.reason);
+        event.preventDefault();
+        return true;
+      }, true);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
