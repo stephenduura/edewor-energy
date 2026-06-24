@@ -93,40 +93,61 @@ export default function App() {
     }
   };
 
-  // Form submission simulated handler
+  // Form submission handler using EmailJS
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.fullName || !form.email || !form.message) {
       return;
     }
     setIsSubmitting(true);
-    
-    // Simulate premium submission sequence and open mail client redirect
-    setTimeout(() => {
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_default';
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_default';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'B_oFaFJIR_PCeGGnd';
+
+    const data = {
+      service_id: serviceId,
+      template_id: templateId,
+      user_id: publicKey,
+      template_params: {
+        name: form.fullName,
+        email: form.email,
+        title: form.inquiryType,
+        message: form.message
+      }
+    };
+
+    fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then((response) => {
+      if (response.ok) {
+        setSubmitSuccess(true);
+        // clean form
+        setForm({
+          fullName: '',
+          email: '',
+          inquiryType: 'EPC Projects',
+          message: ''
+        });
+      } else {
+        throw new Error('Failed to send email.');
+      }
+    })
+    .catch((error) => {
+      console.error('EmailJS Error:', error);
+      alert('There was an issue sending your inquiry. Please try again or email us directly.');
+    })
+    .finally(() => {
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-
-      const subject = encodeURIComponent(`New Inquiry: ${form.inquiryType} from ${form.fullName}`);
-      const body = encodeURIComponent(
-        `Name: ${form.fullName}\n` +
-        `Email: ${form.email}\n` +
-        `Inquiry Type: ${form.inquiryType}\n\n` +
-        `Message:\n${form.message}`
-      );
-      window.location.href = `mailto:info@edeworenergy.com?subject=${subject}&body=${body}`;
-
-      // clean form
-      setForm({
-        fullName: '',
-        email: '',
-        inquiryType: 'EPC Projects',
-        message: ''
-      });
-      // automatically hide success state after 6 seconds
       setTimeout(() => {
         setSubmitSuccess(false);
-      }, 5000);
-    }, 1500);
+      }, 6000);
+    });
   };
 
   return (
