@@ -103,7 +103,7 @@ export default function App() {
 
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_fukfq5i';
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_gvex9xs';
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'B_oFaFJIR_PCeGGnd';
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'B_oFaFJlR_PCeGGnd';
 
     const data = {
       service_id: serviceId,
